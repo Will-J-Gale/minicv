@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core.h>
 #include <constants.h>
 
 namespace mcv
@@ -11,4 +12,11 @@ bool is_int(float value);
 float bilinear_interpolation(float x_alpha, float y_alpha, float tl, float tr, float bl, float br);
 float deg_to_rad(float deg);
 double time();
+Rect<int> calculate_rotation_bounds(int half_width, int half_height, float degrees);
+
+template <typename T>
+T max(std::initializer_list<T> values);
+
+template <typename T>
+T min(std::initializer_list<T> values);
 }

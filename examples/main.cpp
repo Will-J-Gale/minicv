@@ -6,7 +6,7 @@
 int main(int argc, char const *argv[])
 {
     cv::Mat cv_image = cv::imread("/home/mai/Downloads/wallpaper.jpg");
-    cv::resize(cv_image, cv_image, cv::Size(), 0.5f, 0.5f);
+    cv::resize(cv_image, cv_image, cv::Size(), 0.25f, 0.25f);
 
     size_t data_size = cv_image.cols * cv_image.rows * cv_image.channels() * sizeof(byte);
     byte* image_data = (byte*)std::malloc(data_size);
@@ -19,7 +19,8 @@ int main(int argc, char const *argv[])
     
     double start = mcv::time();
     // mcv::Mat out_image = mcv::resize(image, width, height, mcv::InterpolationType::BILINEAR);
-    mcv::Mat out_image = mcv::rotate(image, -5.0f, mcv::InterpolationType::BILINEAR);
+    mcv::Mat out_image = mcv::rotate(image, 35.0f, mcv::InterpolationType::BILINEAR);
+
     double dt = mcv::time() - start;
 
     std::cout << dt << std::endl;

@@ -1,5 +1,12 @@
-#include <cmath>
+/*
 
+    @TODO Implement
+    * flip_lr
+    * flip_up
+    * 90 degree rotations
+    * conert colour
+    * Add weighted 
+*/
 #include <constants.h>
 #include <algorithms.h>
 #include <mat.h>
@@ -88,9 +95,11 @@ Mat resize(Mat& src, size_t dst_width, size_t dst_height, InterpolationType inte
 
 Mat rotate(Mat& src, float degrees, InterpolationType interpolation)
 {
-    Mat dst = mcv::Mat(src.width(), src.height(), src.channels(), src.dtype());
-    size_t half_width = src.width() / 2;
-    size_t half_height = src.height() / 2;
+    Rect<int> bounds = calculate_rotation_bounds(src.width(), src.height(), degrees);
+    Mat dst = Mat(bounds.width, bounds.height, src.channels(), src.dtype());
+
+    int half_width = src.width() / 2;
+    int half_height = src.height() / 2;
 
     float rad_angle = -deg_to_rad(degrees);
     float cos_angle = cos(rad_angle);
@@ -101,20 +110,29 @@ Mat rotate(Mat& src, float degrees, InterpolationType interpolation)
 
     for (int y = 0; y < dst.height(); y++)
     {
+        int y_shifted = y + bounds.tl.y;
+
         for (int x = 0; x < dst.width(); x++)
         {
-            int x_norm = x - half_width;
-            int y_norm = y - half_height;
+            int x_shifted = x + bounds.tl.x;
+            int x_norm = x_shifted - half_width;
+            int y_norm = y_shifted - half_height;
 
             int x_rot = std::floor((x_norm * cos_angle) - (y_norm * sin_angle)) + half_width;
             int y_rot = std::floor((x_norm * sin_angle) + (y_norm * cos_angle)) + half_height;
 
-            if(x_rot < 0 or x_rot >= dst.width() or y_rot < 0 or y_rot >= dst.height())
+            if(x_shifted == 0 && y_shifted == src.height() - 1)
+            {
+                std::cout << "At coords: " << x_shifted << " " << y_shifted << std::endl;
+                std::cout << x_rot << " " << y_rot << std::endl;
+            }
+
+            if(x_rot < 0 or x_rot >= src.width() or y_rot < 0 or y_rot >= src.height())
             {
                 continue;
             }
 
-            uint src_pixel_index = xy_to_image_index(x_rot, y_rot, dst.width(), dst.channels());
+            uint src_pixel_index = xy_to_image_index(x_rot, y_rot, src.width(), src.channels());
             uint dst_pixel_index = xy_to_image_index(x, y, dst.width(), dst.channels());
 
             dst_data[dst_pixel_index] = src_data[src_pixel_index];
@@ -124,6 +142,6 @@ Mat rotate(Mat& src, float degrees, InterpolationType interpolation)
 
     }
 
-    return dst;
+    return dst; //@TODO Data copied here?
 }
 }
