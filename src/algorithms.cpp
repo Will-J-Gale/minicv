@@ -1,14 +1,12 @@
 /*
-
     @TODO Implement
-    * flip_lr
-    * flip_up
-    * 90 degree rotations
-    * conert colour
+    * convert colour
     * Add weighted 
+    * figure out rgb/bgr?
 */
 #include <constants.h>
 #include <algorithms.h>
+#include <algorithms_impl.h>
 #include <mat.h>
 
 namespace mcv
@@ -16,84 +14,17 @@ namespace mcv
 
 Mat resize(Mat& src, size_t dst_width, size_t dst_height, InterpolationType interpolation)
 {
-    Mat dst = mcv::Mat(dst_width, dst_height, src.channels(), src.dtype());
-
-    size_t src_width = src.width();
-    size_t src_height = src.height();
-
-    const byte* src_data = src.data();
-    byte* dst_data = dst.data();
-
-    for (int y = 0; y < dst_height; y++)
+    if(interpolation == InterpolationType::NEAREST)
     {
-        for (int x = 0; x < dst_width; x++)
-        {
-            float src_x = interpolate(x, 0.0f, dst_width, 0.0, src.width());
-            float src_y = interpolate(y, 0.0f, dst_height, 0.0, src.height());
-            uint dst_pixel_index = xy_to_image_index(x, y, dst_width, dst.channels());
-
-            //@TODO remove if statements from inner loops
-            if(interpolation == InterpolationType::NEAREST)
-            {
-                int src_x_index = std::round(src_x);
-                int src_y_index = std::round(src_y);
-
-                uint src_pixel_index = xy_to_image_index(src_x_index, src_y_index, src_width, src.channels());
-
-                dst_data[dst_pixel_index] = src_data[src_pixel_index];
-                dst_data[dst_pixel_index+1] = src_data[src_pixel_index + 1];
-                dst_data[dst_pixel_index+2] = src_data[src_pixel_index + 2];
-            }
-            else if(interpolation == InterpolationType::BILINEAR)
-            {
-                if(is_int(src_x) and is_int(src_y))
-                {
-                    uint src_pixel_index = xy_to_image_index((int)src_x, (int)src_y, src_width, src.channels());
-
-                    dst_data[dst_pixel_index] = src_data[src_pixel_index];
-                    dst_data[dst_pixel_index+1] = src_data[src_pixel_index + 1];
-                    dst_data[dst_pixel_index+2] = src_data[src_pixel_index + 2];
-                }
-                else
-                {
-                    uint src_tl_index = xy_to_image_index(std::floor(src_x), std::floor(src_y), src.width(), src.channels());
-                    uint src_tr_index = xy_to_image_index(std::ceil(src_x), std::floor(src_y), src.width(), src.channels());
-                    uint src_bl_index = xy_to_image_index(std::floor(src_x), std::ceil(src_y), src.width(), src.channels());
-                    uint src_br_index = xy_to_image_index(std::ceil(src_x), std::ceil(src_y), src.width(), src.channels());
-
-                    float x_alpha = 1.0f - get_decimal(src_x); 
-                    float y_alpha = 1.0f - get_decimal(src_y);
-
-                    float b_tl = src_data[src_tl_index];
-                    float b_tr = src_data[src_tr_index];
-                    float b_bl = src_data[src_bl_index];
-                    float b_br = src_data[src_br_index];
-
-                    float g_tl = src_data[src_tl_index+1];
-                    float g_tr = src_data[src_tr_index+1];
-                    float g_bl = src_data[src_bl_index+1];
-                    float g_br = src_data[src_br_index+1];
-
-                    float r_tl = src_data[src_tl_index+2];
-                    float r_tr = src_data[src_tr_index+2];
-                    float r_bl = src_data[src_bl_index+2];
-                    float r_br = src_data[src_br_index+2];
-
-                    float new_b = bilinear_interpolation(x_alpha, y_alpha, b_tl, b_tr, b_bl, b_br);
-                    float new_g = bilinear_interpolation(x_alpha, y_alpha, g_tl, g_tr, g_bl, g_br);
-                    float new_r = bilinear_interpolation(x_alpha, y_alpha, r_tl, r_tr, r_bl, r_br);
-
-                    dst_data[dst_pixel_index] = (int)new_b;
-                    dst_data[dst_pixel_index+1] = (int)new_g;
-                    dst_data[dst_pixel_index+2] = (int)new_r;
-                }
-            }
-        }
+        return resize_nearest(src, dst_width, dst_height);
     }
-    return dst; //@TODO Data copied here??
+    else
+    {
+        return resize_biliear(src, dst_width, dst_height);
+    }
 }
 
-Mat rotate(Mat& src, float degrees, InterpolationType interpolation)
+Mat rotate(Mat& src, float degrees)
 {
     Rect<int> bounds = calculate_rotation_bounds(src.width(), src.height(), degrees);
     Mat dst = Mat(bounds.width, bounds.height, src.channels(), src.dtype());
@@ -121,12 +52,6 @@ Mat rotate(Mat& src, float degrees, InterpolationType interpolation)
             int x_rot = std::floor((x_norm * cos_angle) - (y_norm * sin_angle)) + half_width;
             int y_rot = std::floor((x_norm * sin_angle) + (y_norm * cos_angle)) + half_height;
 
-            if(x_shifted == 0 && y_shifted == src.height() - 1)
-            {
-                std::cout << "At coords: " << x_shifted << " " << y_shifted << std::endl;
-                std::cout << x_rot << " " << y_rot << std::endl;
-            }
-
             if(x_rot < 0 or x_rot >= src.width() or y_rot < 0 or y_rot >= src.height())
             {
                 continue;
@@ -141,7 +66,59 @@ Mat rotate(Mat& src, float degrees, InterpolationType interpolation)
         }
 
     }
-
-    return dst; //@TODO Data copied here?
+    return dst;
 }
+
+Mat rotate(Mat& src, Rotation rotation)
+{
+    if(rotation == Rotation::NONE)
+    {
+        return src;
+    }
+    else if(rotation == Rotation::CLOCKWISE_90)
+    {
+        return rotate_90(src);
+    }
+    else if(rotation == Rotation::CLOCKWISE_180)
+    {
+        return rotate_180(src);
+    }
+    else
+    {
+        return rotate_270(src);
+    }
+}
+
+Mat flip(Mat& src, Flip flip)
+{
+    if(flip == Flip::NONE)
+    {
+        return src;
+    }
+    else if(flip == Flip::HORIZONTAL)
+    {
+        return flip_horizontal(src);
+    }
+    else if(flip == Flip::VERTICAL)
+    {
+        return flip_vertical(src);
+    }
+    else
+    {
+        return flip_horizontal_vertical(src);
+    }
+}
+
+Mat convert_colour(Mat& src, ColourCode colour_code)
+{
+    if(colour_code == ColourCode::NONE)
+    {
+        return src;
+    }
+    else if(colour_code == ColourCode::GRAY)
+    {
+        return convert_gray(src);
+    }
+}
+
 }
