@@ -9,9 +9,9 @@ class Mat
 {
 public:
     Mat();
-    Mat(size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
-    Mat(BytePtr& data, size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
-    Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
+    Mat(size_t width, size_t height, size_t channels, DType dtype);
+    Mat(BytePtr& data, size_t width, size_t height, size_t channels, DType dtype);
+    Mat(byte* data, size_t width, size_t height, size_t channels, DType);
     Mat (Mat& m); // Copy constructor
     Mat(Mat&&); //Move constrcutor
     Mat(const Mat&) = delete;//Copy constructor
@@ -30,6 +30,6 @@ private:
     size_t height_ = 0;
     size_t channels_ = 0;
     BytePtr data_ = nullptr;
-    DType dtype_;
+    DType dtype_  = DType::BYTE;
 };
 }

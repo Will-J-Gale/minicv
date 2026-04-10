@@ -162,7 +162,7 @@ int main(int argc, char const *argv[])
     byte* image_data = (byte*)std::malloc(data_size);
     std::memcpy(image_data, cv_image.data, data_size);
 
-    mcv::Mat mcv_image = mcv::Mat(image_data, cv_image.cols, cv_image.rows, cv_image.channels());
+    mcv::Mat mcv_image = mcv::Mat(image_data, cv_image.cols, cv_image.rows, cv_image.channels(), mcv::DType::BYTE);
 
     resize_bilinear_test(cv_image, mcv_image, show);
     resize_nearest_test(cv_image, mcv_image, show);

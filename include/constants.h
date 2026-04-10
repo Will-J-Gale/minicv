@@ -39,8 +39,16 @@ enum class ColourCode
 
 enum class DType
 {
+    BYTE = 0,
     UINT,
     FLOAT
+};
+
+const std::map<DType, unsigned long> DTYPE_SIZE = std::map<DType, unsigned long> 
+{
+    {DType::BYTE, 1},
+    {DType::UINT, 4},
+    {DType::FLOAT, 4}
 };
 
 }

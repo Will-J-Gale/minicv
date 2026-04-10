@@ -38,7 +38,7 @@ Mat::Mat(size_t width, size_t height, size_t channels, DType dtype)
     height_ = height;
     channels_ = channels;
 
-    size_t data_size = width * height * channels * sizeof(byte); //@TODO Handle dtyle
+    size_t data_size = width * height * channels * DTYPE_SIZE.at(dtype); 
     data_ = std::shared_ptr<byte>((byte*)std::malloc(data_size), std::free);
 }
 
@@ -60,7 +60,6 @@ Mat::Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype)
 
 Mat::~Mat()
 {
-    // std::free(data_);
 }
 
 void Mat::init(size_t width, size_t height, size_t channels, DType dtype)
@@ -69,7 +68,7 @@ void Mat::init(size_t width, size_t height, size_t channels, DType dtype)
     height_ = height;
     channels_ = channels;
 
-    size_t data_size = width * height * channels * sizeof(byte); //@TODO Handle dtyle
+    size_t data_size = width * height * channels * DTYPE_SIZE.at(dtype);
     data_ = std::shared_ptr<byte>((byte*)std::malloc(data_size), std::free);
 }
 
