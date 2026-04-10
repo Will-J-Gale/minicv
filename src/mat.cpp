@@ -38,8 +38,7 @@ Mat::Mat(size_t width, size_t height, size_t channels, DType dtype)
     height_ = height;
     channels_ = channels;
 
-    size_ = width * height * channels * DTYPE_SIZE.at(dtype); 
-    data_ = std::shared_ptr<byte>((byte*)std::malloc(size_), std::free);
+    data_ = std::shared_ptr<byte>((byte*)std::malloc(size()), std::free);
 }
 
 Mat::Mat(BytePtr& data, size_t width, size_t height, size_t channels, DType dtype)
@@ -67,9 +66,7 @@ void Mat::init(size_t width, size_t height, size_t channels, DType dtype)
     width_ = width;
     height_ = height;
     channels_ = channels;
-
-    size_ = width * height * channels * DTYPE_SIZE.at(dtype);
-    data_ = std::shared_ptr<byte>((byte*)std::malloc(size_), std::free);
+    data_ = std::shared_ptr<byte>((byte*)std::malloc(size()), std::free);
 }
 
 size_t Mat::width()
@@ -97,7 +94,15 @@ BytePtr& Mat::data()
 
 size_t Mat::size()
 {
-    return size_;
+    return width_ * height_ * channels_ * DTYPE_SIZE.at(dtype_);
+}
+
+Mat Mat::clone()
+{
+    byte* data_copy = (byte*)std::malloc(size());
+    std::memcpy(data_copy, data_.get(), size());
+
+    return Mat(data_copy, width_, height_, channels_, dtype_);
 }
 
 }

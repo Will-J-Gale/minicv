@@ -267,8 +267,9 @@ Mat convert_gray(Mat& src)
     Mat dst = Mat(src.width(), src.height(), 1, src.dtype());
     const byte* src_data = src.data().get();
     byte* dst_data = dst.data().get();
+    size_t arr_size = dst.size();
 
-    for(size_t i = 0; i < dst.size(); i++)
+    for(size_t i = 0; i < arr_size; i++)
     {
         size_t src_index = i * 3;
 

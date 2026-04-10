@@ -6,3 +6,4 @@
 #include <climits>
 #include <memory>
 #include <map>
+#include <cstring>

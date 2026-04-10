@@ -25,6 +25,7 @@ public:
     BytePtr& data();
     DType dtype();
     size_t size();
+    Mat clone();
 
 private:
     size_t width_ = 0;
@@ -32,6 +33,5 @@ private:
     size_t channels_ = 0;
     BytePtr data_ = nullptr;
     DType dtype_  = DType::BYTE;
-    size_t size_;
 };
 }
