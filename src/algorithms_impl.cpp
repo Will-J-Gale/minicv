@@ -30,7 +30,7 @@ Mat resize_nearest(Mat& src, size_t dst_width, size_t dst_height)
             dst_data[dst_pixel_index+2] = src_data[src_pixel_index + 2];
         }
     }
-    return dst; //@TODO Data copied here??
+    return dst;
 }
 Mat resize_biliear(Mat& src, size_t dst_width, size_t dst_height)
 {
@@ -82,7 +82,7 @@ Mat resize_biliear(Mat& src, size_t dst_width, size_t dst_height)
             dst_data[dst_pixel_index+2] = (int)new_r;
         }
     }
-    return dst; //@TODO Data copied here??
+    return dst;
 }
 
 Mat rotate_degrees(Mat& src, float degrees)
@@ -264,28 +264,21 @@ Mat flip_horizontal_vertical(Mat& src)
 
 Mat convert_gray(Mat& src)
 {
-    double start = time();
     Mat dst = Mat(src.width(), src.height(), 1, src.dtype());
     const byte* src_data = src.data().get();
     byte* dst_data = dst.data().get();
 
-    for(int y = 0; y < dst.height(); y++)
+    for(size_t i = 0; i < dst.size(); i++)
     {
-        for(int x = 0; x < dst.width(); x++)
-        {
-            size_t src_index = xy_to_image_index(x, y, src.width(), src.channels());
-            size_t dst_index = xy_to_image_index(x, y, dst.width(), dst.channels());
+        size_t src_index = i * 3;
 
-            byte b = src_data[src_index];
-            byte g = src_data[src_index+1];
-            byte r = src_data[src_index+2];
-            byte gray = (0.299*r) + (0.587 * g) + (0.114*b); //@TODO Float casting making it slow?
-            dst_data[dst_index] = gray;
-        }
+        byte b = src_data[src_index];
+        byte g = src_data[src_index+1];
+        byte r = src_data[src_index+2];
+        byte gray = (0.299*r) + (0.587 * g) + (0.114*b); //@TODO Float casting making it slow?
+        dst_data[i] = gray;
     }
 
-    double dt = time() - start;
-
-    return std::move(dst);
+    return dst;
 }
 }

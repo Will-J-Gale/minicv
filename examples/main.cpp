@@ -15,7 +15,7 @@ inline void resize_bilinear_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool sh
 
     double mcv_start = mcv::time();
     mcv::Mat mcv_processed = mcv::resize(mcv_image, width, height, mcv::InterpolationType::BILINEAR);
-    double mcv_dt = mcv::time() - cv_start;
+    double mcv_dt = mcv::time() - mcv_start;
 
     double x_slower = mcv_dt / cv_dt;
     std::cout << "Resize bilinear" << std::endl;
@@ -44,7 +44,7 @@ inline void resize_nearest_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool sho
 
     double mcv_start = mcv::time();
     mcv::Mat mcv_processed = mcv::resize(mcv_image, width, height, mcv::InterpolationType::NEAREST);
-    double mcv_dt = mcv::time() - cv_start;
+    double mcv_dt = mcv::time() - mcv_start;
 
     double x_slower = mcv_dt / cv_dt;
     std::cout << "Resize nearest" << std::endl;
@@ -73,7 +73,7 @@ inline void rotate_270(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=false)
 
     double mcv_start = mcv::time();
     mcv::Mat mcv_processed = mcv::rotate(mcv_image, mcv::Rotation::CLOCKWISE_270);
-    double mcv_dt = mcv::time() - cv_start;
+    double mcv_dt = mcv::time() - mcv_start;
 
     double x_slower = mcv_dt / cv_dt;
     std::cout << "Rotate 270" << std::endl;
@@ -102,7 +102,7 @@ inline void flip(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=false)
 
     double mcv_start = mcv::time();
     mcv::Mat mcv_processed = mcv::flip(mcv_image, mcv::Flip::BOTH);
-    double mcv_dt = mcv::time() - cv_start;
+    double mcv_dt = mcv::time() - mcv_start;
 
     double x_slower = mcv_dt / cv_dt;
     std::cout << "Flip" << std::endl;
@@ -131,7 +131,7 @@ inline void gray_convert_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=
 
     double mcv_start = mcv::time();
     mcv::Mat mcv_processed = mcv::convert_colour(mcv_image, mcv::ColourCode::GRAY);
-    double mcv_dt = mcv::time() - cv_start;
+    double mcv_dt = mcv::time() - mcv_start;
 
     double x_slower = mcv_dt / cv_dt;
     std::cout << "Gray convert" << std::endl;
