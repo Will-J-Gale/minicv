@@ -18,7 +18,7 @@ public:
     Mat& operator= (Mat& m);
     ~Mat();
 
-    void init(size_t width, size_t height, size_t channels, DType dtype);
+    void allocate(size_t width, size_t height, size_t channels, DType dtype);
     size_t width();
     size_t height();
     size_t channels();

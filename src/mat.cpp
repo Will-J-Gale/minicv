@@ -61,7 +61,7 @@ Mat::~Mat()
 {
 }
 
-void Mat::init(size_t width, size_t height, size_t channels, DType dtype)
+void Mat::allocate(size_t width, size_t height, size_t channels, DType dtype)
 {
     width_ = width;
     height_ = height;
