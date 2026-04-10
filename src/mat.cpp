@@ -5,7 +5,31 @@ namespace mcv
 
 Mat::Mat()
 {
+}
 
+Mat::Mat (Mat& m)
+{
+    width_ = m.width();
+    height_ = m.height();
+    channels_ = m.channels();
+    data_ = m.data();
+}
+
+Mat::Mat (Mat&& m)
+{
+    width_ = m.width();
+    height_ = m.height();
+    channels_ = m.channels();
+    data_ = m.data();
+}
+
+Mat& Mat::operator=(Mat& m)
+{
+    width_ = m.width();
+    height_ = m.height();
+    channels_ = m.channels();
+    data_ = m.data();
+    return *this;
 }
 
 Mat::Mat(size_t width, size_t height, size_t channels, DType dtype)
@@ -15,10 +39,10 @@ Mat::Mat(size_t width, size_t height, size_t channels, DType dtype)
     channels_ = channels;
 
     size_t data_size = width * height * channels * sizeof(byte); //@TODO Handle dtyle
-    data_ = (byte*)std::malloc(data_size);
+    data_ = std::shared_ptr<byte>((byte*)std::malloc(data_size), std::free);
 }
 
-Mat::Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype)
+Mat::Mat(BytePtr& data, size_t width, size_t height, size_t channels, DType dtype)
 {
     width_ = width;
     height_ = height;
@@ -26,9 +50,27 @@ Mat::Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype)
     data_ = data;
 }
 
+Mat::Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype)
+{
+    width_ = width;
+    height_ = height;
+    channels_ = channels;
+    data_ = std::shared_ptr<byte>(data);
+}
+
 Mat::~Mat()
 {
-    std::free(data_);
+    // std::free(data_);
+}
+
+void Mat::init(size_t width, size_t height, size_t channels, DType dtype)
+{
+    width_ = width;
+    height_ = height;
+    channels_ = channels;
+
+    size_t data_size = width * height * channels * sizeof(byte); //@TODO Handle dtyle
+    data_ = std::shared_ptr<byte>((byte*)std::malloc(data_size), std::free);
 }
 
 size_t Mat::width()
@@ -49,7 +91,7 @@ DType Mat::dtype()
     return dtype_;
 }
 
-byte* Mat::data()
+BytePtr& Mat::data()
 {
     return data_;
 }

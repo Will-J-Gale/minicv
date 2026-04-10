@@ -16,4 +16,5 @@ namespace mcv
     Mat flip_vertical(Mat& src);
     Mat flip_horizontal_vertical(Mat& src);
     Mat convert_gray(Mat& src);
+    void convert_gray(Mat& src, Mat& dst);
 } 

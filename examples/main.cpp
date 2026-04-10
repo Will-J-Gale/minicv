@@ -25,7 +25,7 @@ inline void resize_bilinear_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool sh
 
     if(show)
     {
-        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data());
+        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data().get());
         cv::imshow("opencv", cv_processed);
         cv::imshow("minicv", mcv_out_image);
         cv::waitKey(0);
@@ -34,8 +34,8 @@ inline void resize_bilinear_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool sh
 
 inline void resize_nearest_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=false)
 {
-    size_t width = 250;
-    size_t height = 100;
+    size_t width = 1000;
+    size_t height = 800;
 
     double cv_start = mcv::time();
     cv::Mat cv_processed;
@@ -54,7 +54,7 @@ inline void resize_nearest_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool sho
 
     if(show)
     {
-        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data());
+        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data().get());
         cv::imshow("opencv", cv_processed);
         cv::imshow("minicv", mcv_out_image);
         cv::waitKey(0);
@@ -83,7 +83,7 @@ inline void rotate_270(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=false)
 
     if(show)
     {
-        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data());
+        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data().get());
         cv::imshow("opencv", cv_processed);
         cv::imshow("minicv", mcv_out_image);
         cv::waitKey(0);
@@ -112,7 +112,7 @@ inline void flip(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=false)
 
     if(show)
     {
-        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data());
+        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data().get());
         cv::imshow("opencv", cv_processed);
         cv::imshow("minicv", mcv_out_image);
         cv::waitKey(0);
@@ -141,7 +141,7 @@ inline void gray_convert_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=
 
     if(show)
     {
-        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC1, mcv_processed.data());
+        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC1, mcv_processed.data().get());
         cv::imshow("opencv", cv_processed);
         cv::imshow("minicv", mcv_out_image);
         cv::waitKey(0);
@@ -150,14 +150,13 @@ inline void gray_convert_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=
 
 int main(int argc, char const *argv[])
 {
+    std::string image_path;
     bool show = false;
 
-    if(argc >= 2)
-    {
-        show = std::string(argv[1]) == "show";
-    }
+    if(argc >= 2) image_path = argv[1];
+    if(argc >= 3) show = std::string(argv[2]) == "show";
 
-    cv::Mat cv_image = cv::imread("/home/mai/Downloads/wallpaper.jpg");
+    cv::Mat cv_image = cv::imread(image_path);
 
     size_t data_size = cv_image.cols * cv_image.rows * cv_image.channels() * sizeof(byte);
     byte* image_data = (byte*)std::malloc(data_size);

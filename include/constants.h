@@ -2,6 +2,8 @@
 
 using byte = unsigned char;
 using uint = unsigned int;
+using BytePtr = std::shared_ptr<byte>;
+
 constexpr double PI = 3.1415926535;
 
 namespace mcv
