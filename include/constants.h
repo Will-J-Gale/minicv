@@ -25,7 +25,8 @@ enum class Flip
 {
     NONE,
     HORIZONTAL,
-    VERTICAL
+    VERTICAL,
+    BOTH
 };
 
 enum class ColourCode
