@@ -12,6 +12,7 @@ Mat::Mat (Mat& m)
     width_ = m.width();
     height_ = m.height();
     channels_ = m.channels();
+    dtype_ = m.dtype();
     data_ = m.data();
 }
 
@@ -20,6 +21,7 @@ Mat::Mat (Mat&& m)
     width_ = m.width();
     height_ = m.height();
     channels_ = m.channels();
+    dtype_ = m.dtype();
     data_ = m.data();
 }
 
@@ -29,6 +31,7 @@ Mat& Mat::operator=(Mat& m)
     height_ = m.height();
     channels_ = m.channels();
     data_ = m.data();
+    dtype_ = m.dtype();
     return *this;
 }
 
@@ -37,7 +40,7 @@ Mat::Mat(size_t width, size_t height, size_t channels, DType dtype)
     width_ = width;
     height_ = height;
     channels_ = channels;
-
+    dtype_ = dtype;
     data_ = std::shared_ptr<byte>((byte*)std::malloc(size()), std::free);
 }
 
@@ -47,14 +50,25 @@ Mat::Mat(BytePtr& data, size_t width, size_t height, size_t channels, DType dtyp
     height_ = height;
     channels_ = channels;
     data_ = data;
+    dtype_ = dtype;
 }
 
-Mat::Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype)
+Mat::Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype, bool copy)
 {
     width_ = width;
     height_ = height;
     channels_ = channels;
-    data_ = std::shared_ptr<byte>(data);
+    dtype_ = dtype;
+    
+    if(copy)
+    {
+        data_ = std::shared_ptr<byte>((byte*)std::malloc(size()));
+        std::memcpy(data_.get(), data, size());
+    }
+    else
+    {
+        data_ = std::shared_ptr<byte>(data);
+    }
 }
 
 Mat::~Mat()
@@ -66,6 +80,7 @@ void Mat::allocate(size_t width, size_t height, size_t channels, DType dtype)
     width_ = width;
     height_ = height;
     channels_ = channels;
+    dtype_ = dtype;
     data_ = std::shared_ptr<byte>((byte*)std::malloc(size()), std::free);
 }
 
@@ -103,6 +118,23 @@ Mat Mat::clone()
     std::memcpy(data_copy, data_.get(), size());
 
     return Mat(data_copy, width_, height_, channels_, dtype_);
+}
+
+Mat Mat::zeros(size_t width, size_t height, size_t channels, DType dtype)
+{
+    size_t size = width * height * channels * DTYPE_SIZE.at(dtype);
+    byte* data = (byte*)std::malloc(size);
+    std::memset(data, 0, size);
+
+    return Mat(data, width, height, channels, dtype);
+}
+
+Mat Mat::zeros_like(Mat& src)
+{
+    byte* data = (byte*)std::malloc(src.size());
+    std::memset(data, 0, src.size());
+
+    return Mat(data, src.width(), src.height(), src.channels(), src.dtype());
 }
 
 }

@@ -11,12 +11,15 @@ public:
     Mat();
     Mat(size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
     Mat(BytePtr& data, size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
-    Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
+    Mat(byte* data, size_t width, size_t height, size_t channels, DType dtype=DType::UINT, bool copy=false);
     Mat (Mat& m); // Copy constructor
     Mat(Mat&&); //Move constrcutor
     Mat(const Mat&) = delete;//Copy constructor
     Mat& operator= (Mat& m);
     ~Mat();
+
+    static Mat zeros(size_t width, size_t height, size_t channels, DType dtype=DType::UINT);
+    static Mat zeros_like(Mat& src);
 
     void allocate(size_t width, size_t height, size_t channels, DType dtype);
     size_t width();

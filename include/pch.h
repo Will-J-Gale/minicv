@@ -7,3 +7,4 @@
 #include <memory>
 #include <map>
 #include <cstring>
+#include <cassert>

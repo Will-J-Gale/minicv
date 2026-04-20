@@ -148,6 +148,47 @@ inline void gray_convert_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=
     }
 }
 
+inline void blur_test(cv::Mat& cv_image, mcv::Mat& mcv_image, bool show=false)
+{
+    std::vector<float> filter_data = {
+        0.00097656, 0.00341797, 0.00683594, 0.00878906, 0.00683594,0.00341797, 0.00097656,
+        0.00341797, 0.01196289, 0.02392578, 0.03076172, 0.02392578, 0.01196289, 0.00341797,
+        0.00683594, 0.02392578, 0.04785156, 0.06152344, 0.04785156, 0.02392578, 0.00683594,
+        0.00878906, 0.03076172, 0.06152344, 0.07910156, 0.06152344, 0.03076172, 0.00878906,
+        0.00683594, 0.02392578, 0.04785156, 0.06152344, 0.04785156, 0.02392578, 0.00683594,
+        0.00341797, 0.01196289, 0.02392578, 0.03076172, 0.02392578, 0.01196289, 0.00341797,
+        0.00097656, 0.00341797, 0.00683594, 0.00878906, 0.00683594, 0.00341797, 0.00097656
+    };
+
+    double cv_start = mcv::time();
+    cv::Mat cv_processed = cv_image;
+    cv::Mat cv_filter  = cv::Mat(filter_data, true);
+    // cv::filter2D(cv_processed, cv_processed, -1, cv_filter);
+    cv::blur(cv_image, cv_processed, cv::Size(7, 7));
+    double cv_dt = mcv::time() - cv_start;
+
+    double mcv_start = mcv::time();
+    mcv::Mat filter = mcv::Mat((byte*)filter_data.data(), 7, 7, 1, mcv::DType::FLOAT, true);
+    filter_data.clear();
+
+    mcv::Mat mcv_processed = mcv::convolve(mcv_image, filter);
+    double mcv_dt = mcv::time() - mcv_start;
+
+    double x_slower = mcv_dt / cv_dt;
+    std::cout << "Blur" << std::endl;
+    std::cout << "\topencv: \t" << cv_dt << std::endl;
+    std::cout << "\tminicv: \t" << mcv_dt << std::endl;
+    std::cout << "\tslowdown: \t" << x_slower << std::endl;
+
+    if(show)
+    {
+        cv::Mat mcv_out_image = cv::Mat(mcv_processed.height(), mcv_processed.width(), CV_8UC3, mcv_processed.data().get());
+        cv::imshow("opencv", cv_processed);
+        cv::imshow("minicv", mcv_out_image);
+        cv::waitKey(0);
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     std::string image_path;
@@ -157,6 +198,7 @@ int main(int argc, char const *argv[])
     if(argc >= 3) show = std::string(argv[2]) == "show";
 
     cv::Mat cv_image = cv::imread(image_path);
+    cv::resize(cv_image, cv_image, cv::Size(), 0.25, 0.25);
 
     size_t data_size = cv_image.cols * cv_image.rows * cv_image.channels() * sizeof(byte);
     byte* image_data = (byte*)std::malloc(data_size);
@@ -169,6 +211,7 @@ int main(int argc, char const *argv[])
     rotate_270(cv_image, mcv_image, show);
     flip(cv_image, mcv_image, show);
     gray_convert_test(cv_image, mcv_image, show);
+    blur_test(cv_image, mcv_image,show);
 
     return 0;
 }
